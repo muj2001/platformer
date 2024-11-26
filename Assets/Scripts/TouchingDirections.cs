@@ -48,7 +48,7 @@ public class TouchingDirections : MonoBehaviour
         } 
     }
 
-    private Vector2 wallCheckDirection;
+    private Vector2 wallCheckDirection => gameObject.transform.localScale.x > 0 ? Vector2.right : Vector2.left;
 
     
 
@@ -72,6 +72,5 @@ public class TouchingDirections : MonoBehaviour
         IsGrounded = touchingCollider.Cast(Vector2.down, castFilter, groundHits, groundDistance) > 0;
         IsOnWall = touchingCollider.Cast(wallCheckDirection, castFilter, wallHits, wallDistance) > 0;
         IsOnCeiling = touchingCollider.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;
-        wallCheckDirection = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
     }
 }
