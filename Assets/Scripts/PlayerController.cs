@@ -1,15 +1,20 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D), typeof(TouchingDirections))]
 
 public class PlayerController : MonoBehaviour
 {
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
+    public float jumpImpulse = 5f;
+    
+    // TODO: Change Air Speed according to the speed when Grounded
+    public float airSpeed = 3f;
     Vector2 moveInput;
     Rigidbody2D rb;
     private Animator animator;
+    TouchingDirections touchingDirections;
 
     [SerializeField] private bool _isMoving = false;
     public bool IsMoving { get 
@@ -19,24 +24,42 @@ public class PlayerController : MonoBehaviour
         private set
         {
             _isMoving = value;
-            animator.SetBool("isMoving", value);
+            animator.SetBool(AnimationStrings.isMoving, value);
         } 
     }
 
-    public float currentSpeed { get
-        {
-            if(IsMoving)
-            {
-                if(IsRunning)
+    public float CurrentMoveSpeed { get
+        {   if (CanMove)
+            {  
+                if(IsMoving && !touchingDirections.IsOnWall)
                 {
-                    return runSpeed;
-                }
-                else
+                    if (touchingDirections.IsGrounded && !IsCrouch)
+                    {
+                        if(IsRunning)
+                        {
+                            return runSpeed;
+                        }
+                        else
+                        {
+                            return walkSpeed;
+                        }
+                    } 
+                    else if (touchingDirections.IsGrounded && IsCrouch)
+                    {
+                        return walkSpeed / 2;
+                    }
+                    else 
+                    {
+                        return airSpeed;
+                    }
+                } 
+                else 
                 {
-                    return walkSpeed;
+                    // If the player is not moving, the speed is 0
+                    return 0;
                 }
             } else {
-                // If the player is not moving, the speed is 0
+                // Movement Locked
                 return 0;
             }
         }
@@ -50,7 +73,19 @@ public class PlayerController : MonoBehaviour
         private set
         {
             _isRunning = value;
-            animator.SetBool("isRunning", value);
+            animator.SetBool(AnimationStrings.isRunning, value);
+        } 
+    }
+
+    [SerializeField] private bool _isCrouch = false;
+    public bool IsCrouch { get 
+        { 
+            return _isCrouch;
+        } 
+        private set
+        {
+            _isCrouch = value;
+            animator.SetBool(AnimationStrings.isCrouch, value);
         } 
     }
 
@@ -66,28 +101,25 @@ public class PlayerController : MonoBehaviour
         } 
     }
 
+    public bool CanMove { get {
+        return animator.GetBool(AnimationStrings.canMove);
+    } }
+
 
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        touchingDirections = GetComponent<TouchingDirections>();
     }
 
     public bool isMoving { get; private set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     void FixedUpdate() 
     {
-        rb.linearVelocity = new Vector2(moveInput.x * currentSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(moveInput.x * CurrentMoveSpeed, rb.linearVelocity.y);
+
+        animator.SetFloat(AnimationStrings.yVelocity, rb.linearVelocity.y);
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -113,13 +145,45 @@ public class PlayerController : MonoBehaviour
 
     public void OnRun(InputAction.CallbackContext context)
     {
+        // if (!IsCrouch) {
+            if (context.started)
+            {
+                IsRunning = true;
+            }
+            else if (context.canceled)
+            {
+                IsRunning = false;
+            }
+        // }
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        // TODO: check if alive
+        if (context.started && touchingDirections.IsGrounded && CanMove)
+        {
+            animator.SetTrigger(AnimationStrings.jump);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpImpulse);
+        }
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+         if (context.started)
+        {
+            animator.SetTrigger(AnimationStrings.attack);
+        }   
+    }
+
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
         if (context.started)
         {
-            IsRunning = true;
+            IsCrouch = true;
         }
         else if (context.canceled)
         {
-            IsRunning = false;
+            IsCrouch = false;
         }
     }
 }
