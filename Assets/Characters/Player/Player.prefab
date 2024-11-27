@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: 245505027323517984}
   - component: {fileID: 3454882231849500221}
   - component: {fileID: 8748637977369681594}
-  m_Layer: 0
+  - component: {fileID: 5765822930114029282}
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,7 +82,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: a84a7b3491cdbdf42a8f16d8e1b3d699, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -135,6 +136,7 @@ MonoBehaviour:
   walkSpeed: 3
   runSpeed: 8
   jumpImpulse: 10
+  combo: 0
   airSpeed: 5
   _isMoving: 0
   _isRunning: 0
@@ -367,14 +369,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   castFilter:
     useTriggers: 0
-    useLayerMask: 0
+    useLayerMask: 1
     useDepth: 0
     useOutsideDepth: 0
     useNormalAngle: 0
     useOutsideNormalAngle: 0
     layerMask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 64
     minDepth: 0
     maxDepth: 0
     minNormalAngle: 0
@@ -385,3 +387,15 @@ MonoBehaviour:
   _isGrounded: 1
   _isOnWall: 0
   _isOnCeiling: 0
+--- !u!114 &5765822930114029282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5697856493457390037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fc6a44e2545cb74b9570879e076e6df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

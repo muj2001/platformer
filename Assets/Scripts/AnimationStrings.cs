@@ -14,10 +14,18 @@ internal class AnimationStrings
     internal static string isOnCeiling = "isOnCeiling";
     internal static string isCrouch = "isCrouch";
 
+    internal static string isAlive = "isAlive";
+    
+    internal static string canMove = "canMove";
+
+    //Triggers
     internal static string jump = "jump";
 
     internal static string attack = "attack";
 
+    //Ints
+    internal static string combo = "combo";
 
-    internal static string canMove = "canMove";
+    //Enemy
+    internal static string hasTarget = "hasTarget";
 }

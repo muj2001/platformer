@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
     public float jumpImpulse = 5f;
+
+    public int combo = 0;
     
     // TODO: Change Air Speed according to the speed when Grounded
     public float airSpeed = 3f;
@@ -91,8 +93,9 @@ public class PlayerController : MonoBehaviour
 
     public bool _isFacingRight = true;
 
-    public bool IsFacingRight { get { return _isFacingRight; } private set
-        {
+    public bool IsFacingRight { get { 
+            return _isFacingRight; 
+        } private set {
             if (_isFacingRight != value)
             {
                 transform.localScale *= new Vector2(-1, 1);
@@ -103,7 +106,13 @@ public class PlayerController : MonoBehaviour
 
     public bool CanMove { get {
         return animator.GetBool(AnimationStrings.canMove);
-    } }
+        } 
+    }
+
+    public bool IsAlive { get {
+            return animator.GetBool(AnimationStrings.isAlive);
+        } 
+    }
 
 
     private void Awake() {
@@ -112,8 +121,7 @@ public class PlayerController : MonoBehaviour
         touchingDirections = GetComponent<TouchingDirections>();
     }
 
-    public bool isMoving { get; private set; }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     void FixedUpdate() 
     {
@@ -125,10 +133,13 @@ public class PlayerController : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
+        if (IsAlive) {
+            IsMoving = moveInput != Vector2.zero;
 
-        IsMoving = moveInput != Vector2.zero;
-
-        SetFacingDirection(moveInput);
+            SetFacingDirection(moveInput);
+        } else {
+            IsMoving = false;
+        }
     }
 
     private void SetFacingDirection(Vector2 moveInput)
@@ -160,7 +171,7 @@ public class PlayerController : MonoBehaviour
     public void OnJump(InputAction.CallbackContext context)
     {
         // TODO: check if alive
-        if (context.started && touchingDirections.IsGrounded && CanMove)
+        if (!IsCrouch && context.started && touchingDirections.IsGrounded && CanMove)
         {
             animator.SetTrigger(AnimationStrings.jump);
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpImpulse);
@@ -168,11 +179,11 @@ public class PlayerController : MonoBehaviour
     }
 
     public void OnAttack(InputAction.CallbackContext context)
-    {
-         if (context.started)
+    {   
+        if (!IsCrouch && context.started)
         {
             animator.SetTrigger(AnimationStrings.attack);
-        }   
+        }  
     }
 
     public void OnCrouch(InputAction.CallbackContext context)
